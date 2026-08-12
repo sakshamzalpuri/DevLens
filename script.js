@@ -20,6 +20,13 @@ const blogContainer = document.getElementById("blog-container");
 const twitterContainer = document.getElementById("twitter-container");
 const reposContainer = document.getElementById("repos-container");
 const gists = document.getElementById("gists");
+const skeletonContainer = document.getElementById("skeleton-container");
+
+// Localstorage
+
+const historyContainer = document.getElementById("history-container")
+const HISTORY_KEY = "github-search-history"
+const MAX_HISTORY = 8
 
 const handleSearch = async () => {
     const searchTerm = searchInput.value.trim();
@@ -29,7 +36,16 @@ const handleSearch = async () => {
         return;
     }
 
+    // ── Show skeleton, hide stale content while fetching ──
+    skeletonContainer.classList.remove("hidden");
+    profileContainer.classList.add("hidden");
+    errorContainer.classList.add("hidden");
+
     const data = await fetchData(searchTerm);
+
+    // ── Fetch done — hide skeleton regardless of outcome ──
+    skeletonContainer.classList.add("hidden");
+
     searchInput.value = "";
 
     if (data) {
@@ -120,7 +136,7 @@ function renderProfile(profileData) {
 }
 
 function renderRepos(repoData) {
-    reposContainer.innerHTML = "";
+    reposContainer.textContent = "";
 
     if (repoData.length === 0) {
         reposContainer.innerHTML = '<p class="no-repos">No public repositories found.</p>';
@@ -167,9 +183,9 @@ function renderRepos(repoData) {
             </div>
         `;
     }).join("");
-
     reposContainer.innerHTML = repoCardsHtml;
 }
+
 
 function getLanguageColor(language) {
     const colors = {
