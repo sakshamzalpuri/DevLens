@@ -16,9 +16,6 @@ import {
   hideLoading,
 } from "./render.js";
 
-const SEARCH_DEBOUNCE_MS = 300;
-let searchDebounceId;
-
 async function handleSearch(username = dom.searchInput.value.trim()) {
   if (!username) {
     renderError("Please enter a GitHub username");
@@ -58,7 +55,7 @@ function handleHistoryRemove(username) {
     handleHistoryClear
   );
 }
-
+  
 function handleHistoryClear() {
   renderHistory(
     clearSearchHistory(),
@@ -72,17 +69,10 @@ dom.searchBtn.addEventListener("click", () => handleSearch());
 
 dom.searchInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
-    clearTimeout(searchDebounceId);
     handleSearch();
   }
 });
 
-dom.searchInput.addEventListener("input", () => {
-  clearTimeout(searchDebounceId);
-  searchDebounceId = setTimeout(() => {
-    handleSearch();
-  }, SEARCH_DEBOUNCE_MS);
-});
 
 renderHistory(
   getSearchHistory(),
