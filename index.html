@@ -28,6 +28,7 @@
 
       <!-- ── Search Bar ── -->
       <div class="search-container">
+        <label class="sr-only" for="search">GitHub username</label>
         <input
           type="text"
           id="search"
@@ -35,16 +36,15 @@
           autocomplete="off"
         />
         <button id="search-btn"><i class="fas fa-search"></i> Search</button>
-        <div id="history-container" class="history-container"></div>
       </div>
 
       <!-- ── Search History Chips ── -->
-      <div class="history-container" id="history-container">
+      <div class="history-container" id="history-container" aria-label="Recent searches">
         <!-- chips injected by JS -->
       </div>
 
       <!-- ── Skeleton Loading ── -->
-      <div id="skeleton-container" class="hidden">
+      <div id="skeleton-container" class="hidden" aria-live="polite" aria-busy="false">
         <div class="skeleton-profile-card">
           <div class="skeleton-avatar"></div>
           <div class="skeleton-info">
@@ -74,7 +74,7 @@
         <!-- Profile Header -->
         <div class="profile-card">
           <div class="profile-header">
-            <img src="" alt="Profile avatar" id="avatar" />
+            <img src="" alt="" id="avatar" />
             <div class="profile-info">
               <h2 id="name"></h2>
               <p id="username"></p>
@@ -148,7 +148,7 @@
       </div>
 
       <!-- ── Error State ── -->
-      <div id="error-container" class="hidden">
+      <div id="error-container" class="hidden" aria-live="polite">
         <div class="error-card">
           <div class="error-icon">
             <i class="fas fa-circle-xmark"></i>
@@ -160,6 +160,6 @@
 
     </div><!-- /container -->
 
-    <script src="script.js"></script>
+    <script type="module" src="src/js/app.js"></script>
   </body>
 </html>
