@@ -1,97 +1,46 @@
-# 🔍 GitHub User Finder
+# DevLens
 
-A clean, responsive web app that lets you search any GitHub user and instantly view their profile, repositories, followers, and more — powered by the GitHub REST API.
+A responsive web application for searching GitHub users and exploring their profile and repository data using the GitHub REST API.
 
-![GitHub User Finder Preview](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square) ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+**[Live Demo](https://sakshamzalpuri.github.io/DevLens/) · [Source Code](https://github.com/sakshamzalpuri/DevLens)**
 
----
+## Features
 
-## ✨ Features
+- Search for a GitHub username by clicking Search or pressing Enter.
+- View profile details, followers, following, public repositories, and public gists.
+- Browse repositories with language, stars, forks, and last-updated date.
+- Sort the repositories returned by the API by star count.
+- Revisit recent searches stored in localStorage.
+- Show loading placeholders and user-facing errors for missing users, network issues, and API limits.
+- Use a responsive layout on desktop and mobile.
 
-- 🔎 **Instant User Search** — Look up any GitHub username with a single click or by pressing `Enter`
-- 👤 **Rich Profile Card** — Displays avatar, name, bio, location, join date, company, blog, and Twitter
-- 📊 **Stats at a Glance** — Followers, following, public repos, and public gists
-- 📁 **Repository Browser** — Fetches and sorts repositories by star count, showing language, stars, forks, and last updated date
-- 🕐 **Search History** — Quick-access chips for recent searches (stored in `localStorage`)
-- 💀 **Skeleton Loading** — Smooth skeleton placeholders while data is being fetched
-- ❌ **Error Handling** — User-friendly messages for not-found users or network issues
-- 🌐 **Language Color Badges** — GitHub-style language color dots for 20+ languages
-- 📱 **Fully Responsive** — Works seamlessly on desktop, tablet, and mobile
+## Tech Stack
 
----
+- HTML5
+- CSS3
+- Vanilla JavaScript (ES6+)
+- GitHub REST API
+- localStorage
 
-## 🛠️ Tech Stack
+## Run Locally
 
-| Technology | Purpose |
-|---|---|
-| HTML5 | Structure & semantics |
-| CSS3 | Styling, animations, responsive layout |
-| Vanilla JavaScript | Logic, API calls, DOM manipulation |
-| [GitHub REST API](https://docs.github.com/en/rest) | User & repository data |
-| [Font Awesome 6](https://fontawesome.com/) | Icons |
-| [Google Fonts – Poppins](https://fonts.google.com/specimen/Poppins) | Typography |
-
----
-
-## 🚀 Getting Started
-
-No build tools or dependencies needed — this is a pure HTML/CSS/JS project.
-
-### Run Locally
+No package installation or build step is required.
 
 ```bash
-# Clone the repository
-git clone https://github.com/sakshamzalpuri/github-user-finder.git
-
-# Navigate into the folder
-cd github-user-finder
-
-# Open index.html in your browser
-start index.html   # Windows
-open index.html    # macOS
+git clone https://github.com/sakshamzalpuri/DevLens.git
+cd DevLens
 ```
 
-> You can also use the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) VS Code extension for hot-reloading during development.
+Open `index.html` in your browser, or use the VS Code Live Server extension.
 
----
+## API Notes
 
-## 📂 Project Structure
+DevLens uses GitHub's public REST API. Unauthenticated API requests are rate-limited, so searches may temporarily fail if the limit is reached.
 
-```
-github-user-finder/
-├── index.html       # App markup & layout
-├── style.css        # All styles, animations & responsive design
-├── script.js        # GitHub API calls, rendering & search history logic
-└── .gitignore
-```
+## Project Scope
 
----
+The repository list is based on the repositories returned by the API request. GitHub's default pagination applies; the app currently sorts the returned list rather than fetching every repository page.
 
-## 🔌 API Reference
+## License
 
-This app uses the public [GitHub REST API v3](https://docs.github.com/en/rest) — no authentication required for basic usage.
-
-| Endpoint | Usage |
-|---|---|
-| `GET /users/{username}` | Fetch user profile data |
-| `GET /users/{username}/repos` | Fetch user's public repositories |
-
-> **Note:** The unauthenticated GitHub API has a rate limit of **60 requests/hour** per IP. If you hit the limit, requests will temporarily fail.
-
----
-
-## 📸 Demo
-
-Search any GitHub username (e.g. `torvalds`, `gaearon`, `sindresorhus`) to see the app in action.
-
-🔗 **Live Demo:** [github-user-finder](https://sakshamzalpuri.github.io/github-user-finder) *(if deployed via GitHub Pages)*
-
----
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-<p align="center">Made with ❤️ by <a href="https://github.com/sakshamzalpuri">Saksham Zalpuri</a></p>
+See the [LICENSE](LICENSE) file.
