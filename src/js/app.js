@@ -16,17 +16,32 @@ import {
   hideLoading,
 } from "./render.js";
 
+let lastSearch = "";
+
 async function handleSearch(username = dom.searchInput.value.trim()) {
-  if (!username) {
-    renderError("Please enter a GitHub username");
+  const cleanUsername = username.trim();
+
+  if (!cleanUsername) {
+    renderError("Please enter a GitHub username.");
     return;
   }
 
+  if (
+    !/^[a-zA-Z0-9-]{1,39}$/.test(cleanUsername) ||
+    cleanUsername.startsWith("-") ||
+    cleanUsername.endsWith("-")
+  ) {
+    renderError("Enter a valid GitHub username.");
+    return;
+  }
+
+  lastSearch = cleanUsername;
+  dom.searchBtn.disabled = true;
   showLoading();
 
   try {
-    const { profile, repos } = await getGitHubUser(username);
-    const history = saveSearch(username);
+    const { profile, repos } = await getGitHubUser(cleanUsername);
+    const history = saveSearch(cleanUsername);
 
     hideError();
     dom.profileContainer.classList.remove("hidden");
@@ -36,9 +51,10 @@ async function handleSearch(username = dom.searchInput.value.trim()) {
     dom.searchInput.value = "";
   } catch (error) {
     dom.profileContainer.classList.add("hidden");
-    renderError(error.message);
+    renderError(error.message || "Something went wrong. Please try again.");
   } finally {
     hideLoading();
+    dom.searchBtn.disabled = false;
   }
 }
 
@@ -55,7 +71,7 @@ function handleHistoryRemove(username) {
     handleHistoryClear
   );
 }
-  
+
 function handleHistoryClear() {
   renderHistory(
     clearSearchHistory(),
@@ -67,12 +83,13 @@ function handleHistoryClear() {
 
 dom.searchBtn.addEventListener("click", () => handleSearch());
 
-document.getElementById("retry-btn").addEventListener("click", () => {\n  if (lastSearch) handleSearch(lastSearch);\n});\n\ndom.searchInput.addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    handleSearch();
-  }
+document.getElementById("retry-btn").addEventListener("click", () => {
+  if (lastSearch) handleSearch(lastSearch);
 });
 
+dom.searchInput.addEventListener("keydown", event => {
+  if (event.key === "Enter") handleSearch();
+});
 
 renderHistory(
   getSearchHistory(),
