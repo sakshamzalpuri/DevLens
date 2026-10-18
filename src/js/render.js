@@ -1,4 +1,23 @@
-import { formatDate, getLanguageColor } from "./utils.js";
+function formatDate(date, options) {
+  return new Date(date).toLocaleDateString("en-US", options);
+}
+
+function getLanguageColor(language) {
+  const colors = {
+    JavaScript: "#f1e05a",
+    TypeScript: "#3178c6",
+    Python: "#3572A5",
+    HTML: "#e34c26",
+    CSS: "#563d7c",
+    Java: "#b07219",
+    "C++": "#f34b7d",
+    Ruby: "#701516",
+    Go: "#00ADD8",
+    PHP: "#4F5D95",
+  };
+
+  return colors[language] || "#8b949e";
+}
 
 export const dom = {
   searchInput: document.getElementById("search"),
