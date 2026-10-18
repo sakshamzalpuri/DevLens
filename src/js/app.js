@@ -67,7 +67,7 @@ function handleHistoryClear() {
 
 dom.searchBtn.addEventListener("click", () => handleSearch());
 
-dom.searchInput.addEventListener("keydown", event => {
+document.getElementById("retry-btn").addEventListener("click", () => {\n  if (lastSearch) handleSearch(lastSearch);\n});\n\ndom.searchInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     handleSearch();
   }
