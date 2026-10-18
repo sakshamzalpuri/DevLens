@@ -1,11 +1,11 @@
-const HISTORY_KEY = "github-search-history";
-const MAX_HISTORY = 5;
+const KEY = "github-search-history";
+const LIMIT = 5;
 
 export function getSearchHistory() {
   try {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-    return Array.isArray(history)
-      ? history.filter(item => typeof item === "string").slice(0, MAX_HISTORY)
+    const items = JSON.parse(localStorage.getItem(KEY) || "[]");
+    return Array.isArray(items)
+      ? items.filter(item => typeof item === "string").slice(0, LIMIT)
       : [];
   } catch {
     return [];
@@ -13,42 +13,34 @@ export function getSearchHistory() {
 }
 
 export function saveSearch(username) {
-  const nextHistory = [
+  const history = [
     username,
-    ...getSearchHistory().filter(
-      item => item.toLowerCase() !== username.toLowerCase()
-    ),
-  ].slice(0, MAX_HISTORY);
+    ...getSearchHistory().filter(item => item.toLowerCase() !== username.toLowerCase()),
+  ].slice(0, LIMIT);
 
   try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory));
+    localStorage.setItem(KEY, JSON.stringify(history));
   } catch {
-    // The current search still works if browser storage is unavailable.
+    // Search still works if storage is unavailable.
   }
 
-  return nextHistory;
+  return history;
+}
+
+export function removeSearch(username) {
+  const history = getSearchHistory().filter(item => item.toLowerCase() !== username.toLowerCase());
+
+  try {
+    localStorage.setItem(KEY, JSON.stringify(history));
+  } catch {}
+
+  return history;
 }
 
 export function clearSearchHistory() {
   try {
-    localStorage.removeItem(HISTORY_KEY);
-  } catch {
-    // Ignore storage errors; the visible history is cleared regardless.
-  }
+    localStorage.removeItem(KEY);
+  } catch {}
 
   return [];
-}
-
-export function removeSearch(username) {
-  const nextHistory = getSearchHistory().filter(
-    item => item.toLowerCase() !== username.toLowerCase()
-  );
-
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory));
-  } catch {
-    // Keep the UI responsive if browser storage is unavailable.
-  }
-
-  return nextHistory;
 }
