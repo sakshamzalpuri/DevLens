@@ -3,163 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="DevLens helps you search any GitHub user to view their profile, repositories, followers and more." />
+    <meta name="description" content="DevLens lets you search GitHub users and view their profiles and repositories." />
     <title>DevLens</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
   <body>
-    <div class="container">
-
-      <!-- ── Header ── -->
+    <main class="container">
       <header>
         <h1><i class="fab fa-github"></i> DevLens</h1>
-        <p>Search for any GitHub user to see their profile and repositories</p>
+        <p>Search for a GitHub user and explore their profile and repositories.</p>
       </header>
 
-      <!-- ── Search Bar ── -->
-      <div class="search-container">
+      <form class="search-container" id="search-form">
         <label class="sr-only" for="search">GitHub username</label>
-        <input
-          type="text"
-          id="search"
-          placeholder="Enter a GitHub username..."
-          autocomplete="off"
-        />
-        <button id="search-btn"><i class="fas fa-search"></i> Search</button>
-      </div>
+        <input id="search" type="text" placeholder="Enter a GitHub username..." autocomplete="off" />
+        <button id="search-btn" type="submit"><i class="fas fa-search"></i> Search</button>
+      </form>
 
-      <!-- ── Search History Chips ── -->
-      <div class="history-container" id="history-container" aria-label="Recent searches">
-        <!-- chips injected by JS -->
-      </div>
+      <div class="history-container" id="history-container" aria-label="Recent searches"></div>
+      <p id="loading" class="message hidden" aria-live="polite">Loading...</p>
 
-      <!-- ── Skeleton Loading ── -->
-      <div id="skeleton-container" class="hidden" aria-live="polite" aria-busy="false">
-        <div class="skeleton-profile-card">
-          <div class="skeleton-avatar"></div>
-          <div class="skeleton-info">
-            <div class="skeleton-bar bar-name"></div>
-            <div class="skeleton-bar bar-username"></div>
-            <div class="skeleton-bar bar-bio"></div>
-            <div class="skeleton-bar bar-btn"></div>
-          </div>
-        </div>
-        <div class="skeleton-stats">
-          <div class="skeleton-stat"></div>
-          <div class="skeleton-stat"></div>
-          <div class="skeleton-stat"></div>
-          <div class="skeleton-stat"></div>
-        </div>
-        <div class="skeleton-repos">
-          <div class="skeleton-repo-card"></div>
-          <div class="skeleton-repo-card"></div>
-          <div class="skeleton-repo-card"></div>
-          <div class="skeleton-repo-card"></div>
-        </div>
-      </div>
-
-      <!-- ── Profile Container ── -->
-      <div id="profile-container" class="hidden">
-
-        <!-- Profile Header -->
+      <section id="profile-container" class="hidden" aria-live="polite">
         <div class="profile-card">
           <div class="profile-header">
-            <img src="" alt="" id="avatar" />
+            <img id="avatar" src="" alt="" />
             <div class="profile-info">
               <h2 id="name"></h2>
               <p id="username"></p>
               <p id="bio" class="bio hidden"></p>
-              <div class="location-date">
-                <p id="location-wrapper">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <span id="location">Not specified</span>
-                </p>
-                <p>
-                  <i class="far fa-calendar-alt"></i>
-                  Joined <span id="joined-date"></span>
-                </p>
-              </div>
             </div>
-            <a id="profile-link" target="_blank" rel="noreferrer" class="btn-outline">
-              View Profile <i class="fas fa-arrow-up-right-from-square"></i>
-            </a>
           </div>
-
-          <!-- Stats Row -->
           <div class="stats">
-            <div class="stat">
-              <i class="fas fa-users"></i>
-              <span><strong id="followers"></strong> Followers</span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-user-check"></i>
-              <span><strong id="following"></strong> Following</span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-book"></i>
-              <span><strong id="repos"></strong> Repos</span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-code"></i>
-              <span><strong id="gists"></strong> Gists</span>
-            </div>
-          </div>
-
-          <!-- Social / Additional Info -->
-          <div class="additional-info">
-            <div class="info-item" id="company-container">
-              <i class="fas fa-building"></i>
-              <span id="company"></span>
-            </div>
-            <div class="info-item" id="blog-container">
-              <i class="fas fa-link"></i>
-              <a id="blog" target="_blank" rel="noreferrer"></a>
-            </div>
-            <div class="info-item" id="twitter-container">
-              <i class="fab fa-twitter"></i>
-              <a id="twitter" target="_blank" rel="noreferrer"></a>
-            </div>
+            <div class="stat"><i class="fas fa-users"></i><span><strong id="followers"></strong> Followers</span></div>
+            <div class="stat"><i class="fas fa-user-check"></i><span><strong id="following"></strong> Following</span></div>
+            <div class="stat"><i class="fas fa-book"></i><span><strong id="repos"></strong> Public repos</span></div>
           </div>
         </div>
 
-        <!-- ── Repos Section ── -->
-        <div class="repos-section">
-          <div class="repos-section-header">
-            <h3>Latest Repositories</h3>
-            <!-- Language filter injected by JS -->
-            <!-- <select id="language-filter" class="language-filter hidden">
-              <option value="all">All Languages</option>
-            </select> -->
-          </div>
-          <div id="repos-container" class="repos-container">
-            <!-- Repo cards injected by JS -->
-          </div>
-        </div>
+        <section class="repos-section">
+          <h3>Repositories</h3>
+          <div id="repos-container" class="repos-container"></div>
+        </section>
+      </section>
+
+      <div id="error-container" class="error-card hidden" role="alert">
+        <i class="fas fa-circle-xmark error-icon"></i>
+        <p id="error-message" class="error-message"></p>
       </div>
-
-      <!-- ── Error State ── -->
-      <div id="error-container" class="hidden" aria-live="polite">
-        <div class="error-card">
-          <div class="error-icon">
-            <i class="fas fa-circle-xmark"></i>
-          </div>
-          <p class="error-message" id="error-message"></p>
-          <button class="btn-retry" id="retry-btn">Try Again</button>
-        </div>
-      </div>
-
-    </div><!-- /container -->
-
+    </main>
     <script type="module" src="src/js/app.js"></script>
   </body>
 </html>
