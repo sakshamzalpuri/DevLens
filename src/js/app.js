@@ -1,11 +1,55 @@
+const HISTORY_KEY = "github-search-history";
+const MAX_HISTORY = 5;
+
+function getSearchHistory() {
+  try {
+    const items = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    return Array.isArray(items)
+      ? items.filter(item => typeof item === "string").slice(0, MAX_HISTORY)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSearch(username) {
+  const history = [
+    username,
+    ...getSearchHistory().filter(item => item.toLowerCase() !== username.toLowerCase()),
+  ].slice(0, MAX_HISTORY);
+
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // Search still works if storage is unavailable.
+  }
+
+  return history;
+}
+
+function removeSearch(username) {
+  const history = getSearchHistory().filter(item => item.toLowerCase() !== username.toLowerCase());
+
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {}
+
+  return history;
+}
+
+function clearSearchHistory() {
+  try {
+    localStorage.removeItem(HISTORY_KEY);
+  } catch {}
+
+  return [];
+}
+
 import { getGitHubUser } from "./api.js";
 import {
   dom, renderError, hideError, renderHistory, showLoading, hideLoading,
   renderProfile, renderRepos,
 } from "./render.js";
-import {
-  getSearchHistory, saveSearch, removeSearch, clearSearchHistory,
-} from "./storage.js";
 
 let lastSearch = "";
 
