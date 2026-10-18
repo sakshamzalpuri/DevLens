@@ -1,43 +1,39 @@
 const GITHUB_API_BASE = "https://api.github.com";
+const REPOSITORY_LIMIT = 6;
 
-export async function getGitHubUser(username){
-    const profileUrl = `${GITHUB_API_BASE}/users/${username}`
-    const reposUrl = `${GITHUB_API_BASE}/users/${username}/repos`
+async function fetchJson(url) {
+  let response;
 
-    let profileResponse
-    let reposResponse
+  try {
+    response = await fetch(url);
+  } catch {
+    throw new Error("Network error. Check your connection and try again.");
+  }
 
-    try {
-        [profileResponse, reposResponse] = await Promise.all([
-            fetch(profileUrl),
-            fetch(reposUrl)
-        ])
-    } catch (error) {
-        throw new Error("Network error. Please check your connection and try again.")
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error("GitHub user not found.");
     }
 
-    if(!profileResponse.ok){
-        if(profileResponse.status === 404){
-            throw new Error("User not found")
-        }
-
-        if(profileResponse.status === 403){
-            throw new Error("GitHub API rate limit reached. Please try again later.")
-        }
-
-        throw new Error("GitHub profile could not be loaded")
+    if (response.status === 403 || response.status === 429) {
+      throw new Error("GitHub API rate limit reached. Please try again later.");
     }
 
-    if(!reposResponse.ok){
-        if(reposResponse.status === 403){
-            throw new Error("GitHub API rate limit reached. Please try again later.")
-        }
+    throw new Error("GitHub data could not be loaded. Please try again.");
+  }
 
-        throw new Error("Repositories could not be loaded")
-    }
+  return response.json();
+}
 
-    const profile = await profileResponse.json()
-    const repos = await reposResponse.json()
+export async function getGitHubUser(username) {
+  const encodedUsername = encodeURIComponent(username.trim());
+  const profileUrl = `${GITHUB_API_BASE}/users/${encodedUsername}`;
+  const reposUrl = `${GITHUB_API_BASE}/users/${encodedUsername}/repos?per_page=${REPOSITORY_LIMIT}&sort=updated&direction=desc`;
 
-    return { profile, repos }
+  const [profile, repos] = await Promise.all([
+    fetchJson(profileUrl),
+    fetchJson(reposUrl),
+  ]);
+
+  return { profile, repos };
 }
