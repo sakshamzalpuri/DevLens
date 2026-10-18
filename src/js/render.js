@@ -19,7 +19,7 @@ function getLanguageColor(language) {
   return colors[language] || "#8b949e";
 }
 
-export const dom = {
+const dom = {
   searchInput: document.getElementById("search"),
   searchBtn: document.getElementById("search-btn"),
   profileContainer: document.getElementById("profile-container"),
@@ -46,16 +46,16 @@ export const dom = {
   historyContainer: document.getElementById("history-container"),
 };
 
-export function renderError(message) {
+function renderError(message) {
   dom.errorContainer.classList.remove("hidden");
   dom.errorContainer.querySelector(".error-message").textContent = message;
 }
 
-export function hideError() {
+function hideError() {
   dom.errorContainer.classList.add("hidden");
 }
 
-export function renderHistory(history, onSelect, onRemove, onClear) {
+function renderHistory(history, onSelect, onRemove, onClear) {
   dom.historyContainer.innerHTML = "";
 
   if (history.length === 0) {
@@ -96,19 +96,19 @@ export function renderHistory(history, onSelect, onRemove, onClear) {
   dom.historyContainer.appendChild(clearButton);
 }
 
-export function showLoading() {
+function showLoading() {
   dom.skeletonContainer.classList.remove("hidden");
   dom.skeletonContainer.setAttribute("aria-busy", "true");
   dom.profileContainer.classList.add("hidden");
   dom.errorContainer.classList.add("hidden");
 }
 
-export function hideLoading() {
+function hideLoading() {
   dom.skeletonContainer.classList.add("hidden");
   dom.skeletonContainer.setAttribute("aria-busy", "false");
 }
 
-export function renderProfile(profile) {
+function renderProfile(profile) {
   dom.avatar.src = profile.avatar_url;
   dom.avatar.alt = `${profile.login} profile avatar`;
   dom.nameElement.textContent = profile.name || profile.login;
@@ -150,7 +150,7 @@ export function renderProfile(profile) {
     : "";
 }
 
-export function renderRepos(repos) {
+function renderRepos(repos) {
   dom.reposContainer.replaceChildren();
 
   if (repos.length === 0) {
@@ -220,3 +220,5 @@ export function renderRepos(repos) {
     dom.reposContainer.appendChild(card);
   });
 }
+
+export { dom, renderError, hideError, renderHistory, showLoading, hideLoading, renderProfile, renderRepos };
