@@ -132,53 +132,72 @@ export function renderProfile(profile) {
 }
 
 export function renderRepos(repos) {
-  dom.reposContainer.textContent = "";
+  dom.reposContainer.replaceChildren();
 
   if (repos.length === 0) {
-    dom.reposContainer.innerHTML = '<p class="no-repos">No public repositories found.</p>';
+    const emptyMessage = document.createElement("p");
+    emptyMessage.className = "no-repos";
+    emptyMessage.textContent = "No public repositories found.";
+    dom.reposContainer.appendChild(emptyMessage);
     return;
   }
 
-  const sortedRepos = [...repos].sort(
-    (a, b) => b.stargazers_count - a.stargazers_count
-  );
+  repos.forEach(repo => {
+    const card = document.createElement("article");
+    card.className = "repo-card";
 
-  dom.reposContainer.innerHTML = sortedRepos.map(repo => {
-    const updatedDate = formatDate(repo.updated_at, {
-      month: "short",
-      day: "numeric",
+    const header = document.createElement("div");
+    header.className = "repo-card-header";
+
+    const repoIcon = document.createElement("i");
+    repoIcon.className = "fas fa-code-branch";
+    repoIcon.setAttribute("aria-hidden", "true");
+
+    const link = document.createElement("a");
+    link.className = "repo-name";
+    link.href = repo.html_url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = repo.name;
+
+    header.append(repoIcon, link);
+
+    const description = document.createElement("p");
+    description.className = "repo-description";
+    description.textContent = repo.description || "No description available.";
+
+    const meta = document.createElement("div");
+    meta.className = "repo-meta";
+
+    if (repo.language) {
+      const language = document.createElement("span");
+      language.className = "repo-meta-item";
+
+      const dot = document.createElement("span");
+      dot.className = "lang-dot";
+      dot.style.backgroundColor = getLanguageColor(repo.language);
+
+      language.append(dot, document.createTextNode(repo.language));
+      meta.appendChild(language);
+    }
+
+    [
+      ["fas fa-star", repo.stargazers_count],
+      ["fas fa-code-branch", repo.forks_count],
+      ["fas fa-calendar", formatDate(repo.updated_at, { month: "short", day: "numeric" })],
+    ].forEach(([iconClass, value]) => {
+      const item = document.createElement("span");
+      item.className = "repo-meta-item";
+
+      const icon = document.createElement("i");
+      icon.className = iconClass;
+      icon.setAttribute("aria-hidden", "true");
+
+      item.append(icon, document.createTextNode(String(value)));
+      meta.appendChild(item);
     });
 
-    const languageHtml = repo.language
-      ? `<span class="repo-meta-item">
-           <span class="lang-dot" style="background-color: ${getLanguageColor(repo.language)};"></span>
-           ${repo.language}
-         </span>`
-      : "";
-
-    return `
-      <div class="repo-card">
-        <div class="repo-card-header">
-          <i class="fas fa-code-branch"></i>
-          <a href="${repo.html_url}" target="_blank" rel="noreferrer" class="repo-name">${repo.name}</a>
-        </div>
-        <p class="repo-description">${repo.description || "No description available."}</p>
-        <div class="repo-meta">
-          ${languageHtml}
-          <span class="repo-meta-item">
-            <i class="fas fa-star"></i>
-            ${repo.stargazers_count}
-          </span>
-          <span class="repo-meta-item">
-            <i class="fas fa-code-branch"></i>
-            ${repo.forks_count}
-          </span>
-          <span class="repo-meta-item">
-            <i class="fas fa-calendar"></i>
-            ${updatedDate}
-          </span>
-        </div>
-      </div>
-    `;
-  }).join("");
+    card.append(header, description, meta);
+    dom.reposContainer.appendChild(card);
+  });
 }
