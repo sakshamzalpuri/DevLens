@@ -1,62 +1,70 @@
-import { getGitHubUser } from "./api.js";
+import { getUser } from "./api.js";
 import {
-  dom,
+  searchForm,
+  searchInput,
   showLoading,
   hideLoading,
   showError,
-  renderProfile,
-  renderRepos,
-  renderHistory
+  showProfile,
+  showRepos,
+  showHistory
 } from "./render.js";
 
 const HISTORY_KEY = "github-search-history";
 
 function getHistory() {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-  } catch {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    if (saved) {
+      const history = JSON.parse(saved);
+      return Array.isArray(history) ? history.filter(name => typeof name === "string") : [];
+    }
+    return [];
+  } catch (error) {
     return [];
   }
 }
 
 function saveHistory(username) {
-  const history = [
-    username,
-    ...getHistory().filter(name => name.toLowerCase() !== username.toLowerCase())
-  ].slice(0, 3);
+  let history = getHistory();
+  history = history.filter((name) => name.toLowerCase() !== username.toLowerCase());
+  history.unshift(username);
+  history = history.slice(0, 3);
 
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-  renderHistory(history, searchUser);
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch (error) {
+    // Searching still works when browser storage is unavailable.
+  }
+  showHistory(history, searchUser);
 }
 
-async function searchUser(username = dom.searchInput.value.trim()) {
+async function searchUser(username) {
   username = username.trim();
 
-  if (!username) {
+  if (username === "") {
     showError("Please enter a GitHub username.");
     return;
   }
 
-  dom.searchBtn.disabled = true;
   showLoading();
 
   try {
-    const data = await getGitHubUser(username);
-    renderProfile(data.profile);
-    renderRepos(data.repos);
-    saveHistory(username);
-    dom.searchInput.value = "";
+    const data = await getUser(username);
+    showProfile(data.profile);
+    showRepos(data.repos);
+    saveHistory(data.profile.login || username);
+    searchInput.value = "";
   } catch (error) {
-    dom.profileContainer.classList.add("hidden");
     showError(error.message || "Something went wrong. Please try again.");
   } finally {
     hideLoading();
   }
 }
 
-dom.searchForm.addEventListener("submit", event => {
+searchForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  searchUser();
+  searchUser(searchInput.value);
 });
 
-renderHistory(getHistory(), searchUser);
+showHistory(getHistory(), searchUser);
