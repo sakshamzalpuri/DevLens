@@ -46,7 +46,6 @@ async function searchUser(username) {
     showError("Please enter a GitHub username.");
     return;
   }
-
   showLoading();
 
   try {

@@ -1,55 +1,61 @@
 # DevLens
 
-A lightweight GitHub profile explorer built with HTML, CSS, and vanilla JavaScript. Search for a GitHub username to view profile details, public repository statistics, and recently updated repositories.
+A beginner-friendly GitHub profile viewer built with HTML, CSS, and vanilla JavaScript.
 
 **[Live Demo](https://sakshamzalpuri.github.io/DevLens/) · [Source Code](https://github.com/sakshamzalpuri/DevLens)**
 
-## Preview
-
-<!-- Add a real screenshot at docs/desktop.png before publishing this image reference. -->
-![DevLens desktop preview](docs/desktop.png)
-
 ## Features
 
-- Search for a GitHub user by submitting a username or pressing Enter.
-- View profile information, including avatar, bio, followers, following, and public repository count.
-- Browse up to six recently updated public repositories with descriptions and star counts.
-- Revisit up to three recent successful searches using browser local storage.
-- Display loading feedback and useful messages for missing users and API failures.
-- Responsive layout for desktop and mobile screens.
+- Search for a GitHub username by clicking Search or pressing Enter.
+- View avatar, name, username, bio, followers, following, and public repo count.
+- Browse up to six repositories with names, descriptions, and star counts.
+- Revisit up to three recent searches from a clickable history list.
+- Loading text and clear error messages.
+- Responsive layout for desktop and mobile.
 
-## Built With
+## Screenshots
 
-- HTML5
-- CSS3
-- JavaScript (ES modules)
-- GitHub REST API
-- Browser localStorage
+| Profile result | Error state | Mobile |
+|---|---|---|
+| ![Profile](./src/docs/profile.png) | ![Error](./src/docs/error.png) | ![Mobile](./src/docs/mobile.png) |
 
-## How It Works
+## Application Flow
 
-1. The search form passes the username to the application module in `src/js/app.js`.
-2. The application calls `getUser()` from `src/js/api.js` to request the user's public profile and repository data from GitHub.
-3. The API module returns the profile and repository data, or throws an error when a request fails.
-4. Functions in `src/js/render.js` update the interface with the profile, repository cards, loading state, or error message.
-5. Successful searches are saved in localStorage, with the most recent three usernames shown as clickable history items.
+1. User types a username and clicks **Search** or presses **Enter**.
+2. Input is trimmed and validated. Empty input shows a message and no request is sent.
+3. "Loading..." is shown while the app calls `https://api.github.com/users/{username}`.
+4. On success, the profile card renders, then the repos are fetched from `/users/{username}/repos` and the first six are displayed.
+5. The username is saved to `localStorage` (max 3, newest first, no duplicates) and the history list updates.
+6. Clicking a history item re-runs the search with that username.
 
-## Project Structure
-
-```text
-DevLens/
-├── index.html
-├── style.css
-└── src/
-    └── js/
-        ├── app.js
-        ├── api.js
-        └── render.js
+```mermaid
+flowchart TD
+  A[User enters username] --> B{Input empty?}
+  B -->|yes| C[Show validation message]
+  B -->|no| D[Show loading]
+  D --> E[Fetch profile from GitHub API]
+  E -->|404| F[User not found message]
+  E -->|403/429| G[Rate limit message]
+  E -->|network error| H[Connection error message]
+  E -->|200| I[Render profile + fetch repos]
+  I --> J[Render up to 6 repos]
+  J --> K[Save to recent searches in localStorage]
 ```
 
-- **`app.js`** — coordinates search events, loading and error flow, and search history.
-- **`api.js`** — requests profile and repository data from GitHub's public REST API and handles HTTP errors.
-- **`render.js`** — updates the DOM and renders profile details, repositories, search history, and UI states.
+## Error Handling
+
+| Scenario | What the user sees |
+|---|---|
+| Empty input | Prompt to enter a username, no API call |
+| User doesn't exist (404) | "User not found" message, previous result cleared |
+| Rate limit hit (403/429) | Message that the GitHub API limit was reached, try again later |
+| Network failure / offline | Connection error message |
+| User has no repos | Empty repos message instead of a blank section |
+| Missing bio/name | Fallback text instead of `null` |
+
+## Tech Stack
+
+HTML5, CSS3, Vanilla JavaScript, GitHub REST API, localStorage
 
 ## Run Locally
 
@@ -60,29 +66,9 @@ git clone https://github.com/sakshamzalpuri/DevLens.git
 cd DevLens
 ```
 
-Open `index.html` in a browser, or use the VS Code Live Server extension.
+Open `index.html` in your browser, or use the VS Code Live Server extension.
 
 ## API Notes
 
-DevLens uses GitHub's public REST API without authentication. Unauthenticated requests are rate-limited, so requests may fail temporarily when the limit is reached. See the [GitHub REST API documentation](https://docs.github.com/en/rest).
+DevLens uses GitHub's public REST API. Unauthenticated requests are limited to 60/hour per IP, so searches may temporarily fail when the limit is reached.
 
-## Manual Test Checklist
-
-- [ ] Search for a valid GitHub username.
-- [ ] Submit a username that does not exist.
-- [ ] Submit an empty input.
-- [ ] Press Enter to submit a search.
-- [ ] Open a repository link and verify it points to the correct repository.
-- [ ] Revisit a recent search and refresh the page to check saved history.
-- [ ] Test the layout on a narrow mobile viewport.
-- [ ] Verify that loading feedback and error messages are readable.
-
-## Future Improvements
-
-- Add automated tests for API responses and rendering states.
-- Improve handling of transient network errors and concurrent searches.
-- Add keyboard and screen-reader usability checks.
-
-## License
-
-No license file is currently present. Add a license that matches how you want others to use the project before describing it as open source.
